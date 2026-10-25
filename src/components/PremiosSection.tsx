@@ -30,7 +30,8 @@ export function PremiosSection() {
     >
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <SectionTitle className="text-ink">{t.premios.title}</SectionTitle>
-        <p className="max-w-[420px] text-[15px] leading-relaxed text-ink/80 lg:mt-4">
+        <p className="mono inline-flex w-fit -rotate-2 items-center gap-2 self-start rounded-full bg-ink px-4 py-2 text-[12px] uppercase tracking-[0.12em] text-pink lg:mt-5">
+          <span className="animate-bounce">↓</span>
           {t.premios.intro}
         </p>
       </div>
@@ -97,10 +98,7 @@ function AwardFolder({ award, onOpen }: { award: Award; onOpen: (photo: number) 
         zoomOnClick={false}
         onItemClick={(_, index) => onOpen(index < 2 ? index : 0)}
       />
-      <p className="mono mt-3 flex w-full justify-between text-[11px] text-ink/60">
-        <span>{text.date}</span>
-        <span>{t.premios.photos(award.photos.length)}</span>
-      </p>
+      <p className="mono mt-3 w-full text-center text-[11px] text-ink/60">{text.date}</p>
     </div>
   );
 }

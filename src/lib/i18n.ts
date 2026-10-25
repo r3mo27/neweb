@@ -90,9 +90,7 @@ const en = {
   },
   premios: {
     title: "Awards",
-    intro:
-      "With Cazadores de Rocolos, my team. Each folder holds its photos: tap to open it, drag the papers to reorder them or tap one to see it full size.",
-    photos: (n: number) => `${n} photos`,
+    intro: "Click the folders!",
     photo: (k: number) => `Photo ${k}`,
     photoOf: (title: string, k: number) => `${title}, photo ${k}`,
     close: "Close",
@@ -225,9 +223,7 @@ const es: Copy = {
   },
   premios: {
     title: "Premios",
-    intro:
-      "Con Cazadores de Rocolos, mi equipo. Cada carpeta lleva sus fotos dentro: pulsa para abrirla, arrastra los papeles para ordenarlos o pulsa uno para verlo en grande.",
-    photos: (n) => `${n} fotos`,
+    intro: "¡Abre las carpetas!",
     photo: (k) => `Foto ${k}`,
     photoOf: (title, k) => `${title}, foto ${k}`,
     close: "Cerrar",

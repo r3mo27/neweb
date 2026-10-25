@@ -39,7 +39,8 @@ export const projects: Project[] = [
   {
     id: "kokoda",
     name: "Kokoda Awakened",
-    host: "kokoda-awakened",
+    url: "https://kokodaawakened.com",
+    host: "kokodaawakened.com",
     image: "/webs/kokoda.jpg",
     accent: "#5b3fd4",
   },

@@ -1,8 +1,8 @@
 "use client";
 
-import { motion } from "motion/react";
 import type { ReactNode } from "react";
 import type { SectionId } from "@/lib/data";
+import { Words } from "./Reveal";
 import { CoverShade, StackLayer } from "./StackLayer";
 import { TabRow } from "./TabRow";
 
@@ -45,18 +45,16 @@ export function SectionTitle({
   children,
   className = "",
 }: {
-  children: ReactNode;
+  children: string;
   className?: string;
 }) {
   return (
-    <motion.h2
-      initial={{ y: 40, opacity: 0, rotate: -2 }}
-      whileInView={{ y: 0, opacity: 1, rotate: 0 }}
-      viewport={{ once: true, amount: 0.6 }}
-      transition={{ type: "spring", stiffness: 160, damping: 18 }}
-      className={`display origin-bottom-left text-[clamp(3rem,min(9vw,14vh),7.6rem)] ${className}`}
-    >
-      {children}
-    </motion.h2>
+    <Words
+      as="h2"
+      text={children}
+      stagger={0.07}
+      amount={0.6}
+      className={`display text-[clamp(3rem,min(9vw,14vh),7.6rem)] ${className}`}
+    />
   );
 }

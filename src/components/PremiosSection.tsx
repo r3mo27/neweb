@@ -8,6 +8,7 @@ import { awards, type Award } from "@/lib/data";
 import { useMedia } from "@/lib/useMedia";
 import Folder, { type FolderEntry } from "./Folder";
 import { useSite } from "./Providers";
+import { Reveal, Words } from "./Reveal";
 import { SectionFolder, SectionTitle } from "./SectionFolder";
 
 const spring = { type: "spring", stiffness: 260, damping: 22 } as const;
@@ -30,10 +31,10 @@ export function PremiosSection() {
     >
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <SectionTitle className="text-ink">{t.premios.title}</SectionTitle>
-        <p className="mono inline-flex w-fit -rotate-2 items-center gap-2 self-start rounded-full bg-ink px-4 py-2 text-[12px] uppercase tracking-[0.12em] text-pink lg:mt-5">
+        <Reveal as="p" delay={0.25} y={14} className="mono inline-flex w-fit -rotate-2 items-center gap-2 self-start rounded-full bg-ink px-4 py-2 text-[12px] uppercase tracking-[0.12em] text-pink lg:mt-5">
           <span className="animate-bounce">↓</span>
           {t.premios.intro}
-        </p>
+        </Reveal>
       </div>
 
       <div className="mt-14 grid flex-1 content-center sm:mt-[clamp(1.25rem,5vh,3.5rem)] gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
@@ -46,12 +47,17 @@ export function PremiosSection() {
             transition={{ ...spring, delay: i * 0.09 }}
           >
             <AwardFolder award={a} onOpen={(photo) => setOpen({ award: a, photo })} />
-            <h3 className="mt-5 text-[clamp(1.1rem,1.5vw,1.35rem)] font-extrabold leading-snug tracking-[-0.02em] text-ink">
-              {t.premios.awards[a.id].title}
-            </h3>
-            <p className="mt-2 text-[14px] leading-relaxed text-ink/70">
-              {t.premios.awards[a.id].text}
-            </p>
+            <Words
+              as="h3"
+              text={t.premios.awards[a.id].title}
+              delay={0.2 + i * 0.09}
+              className="mt-5 text-[clamp(1.1rem,1.5vw,1.35rem)] font-extrabold leading-snug tracking-[-0.02em] text-ink"
+            />
+            <Words
+              text={t.premios.awards[a.id].text}
+              delay={0.35 + i * 0.09}
+              className="mt-2 text-[14px] leading-relaxed text-ink/70"
+            />
           </motion.div>
         ))}
       </div>
@@ -98,7 +104,7 @@ function AwardFolder({ award, onOpen }: { award: Award; onOpen: (photo: number) 
         zoomOnClick={false}
         onItemClick={(_, index) => onOpen(index < 2 ? index : 0)}
       />
-      <p className="mono mt-3 w-full text-center text-[11px] text-ink/60">{text.date}</p>
+      <Words text={text.date} delay={0.15} className="mono mt-3 w-full text-center text-[11px] text-ink/60" />
     </div>
   );
 }

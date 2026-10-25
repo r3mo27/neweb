@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { contact } from "@/lib/data";
 import { langs } from "@/lib/i18n";
 import { useMotto, useSite } from "./Providers";
+import { Reveal, Words } from "./Reveal";
 import { WidthDimension } from "./Blueprint";
 import { CoverShade, StackLayer } from "./StackLayer";
 import { TabRow } from "./TabRow";
@@ -54,9 +55,11 @@ export function HeroFolder() {
       {/* La barra de arriba no forma parte del cajón: se va con el scroll */}
       <div className="mx-auto w-full max-w-[1320px] px-4 pt-5 sm:px-8">
         <div className="flex items-center justify-between">
-          <p className="mono text-[11px] text-cream/90">
-            {contact.name} · {contact.city}
-          </p>
+          <Words
+            text={`${contact.name} · ${contact.city}`}
+            delay={0.3}
+            className="mono text-[11px] text-cream/90"
+          />
           <div className="flex items-center gap-2">
             <LangToggle />
             <motion.button
@@ -183,25 +186,33 @@ export function HeroFolder() {
                     style={{ transformOrigin: "50% 100%" }}
                     className="r relative flex h-full flex-col justify-end gap-4 bg-pink p-5 shadow-[0_-12px_30px_-14px_rgba(0,0,0,0.45)] sm:flex-row sm:items-end sm:justify-between sm:p-9"
                   >
-                    <h1 className="display max-w-[20ch] text-[clamp(2.2rem,5.8vw,5rem)] text-ink">
-                      {motto}
-                    </h1>
+                    {/* El texto entra cuando el frontal acaba de cerrarse */}
+                    <Words
+                      as="h1"
+                      text={motto}
+                      delay={1.15}
+                      stagger={0.07}
+                      amount={0.2}
+                      className="display max-w-[20ch] text-[clamp(2.2rem,5.8vw,5rem)] text-ink"
+                    />
                     <div className="max-w-[300px] shrink-0 text-[13px] leading-relaxed text-ink/80 sm:text-[14px]">
-                      <p>{t.hero.intro}</p>
-                      <motion.button
-                        onClick={() => scrollTo("#webs")}
-                        whileHover={{ x: 4 }}
-                        whileTap={{ scale: 0.96 }}
-                        className="focus-ring mt-4 inline-flex items-center gap-1.5 rounded-full bg-ink px-4 py-2 text-[12px] font-semibold text-cream"
-                      >
-                        {t.hero.open}
-                        <motion.span
-                          animate={{ y: [0, 3, 0] }}
-                          transition={{ repeat: Infinity, duration: 1.4, ease: "easeInOut" }}
+                      <Words text={t.hero.intro} delay={1.4} amount={0.2} />
+                      <Reveal delay={1.75} y={14}>
+                        <motion.button
+                          onClick={() => scrollTo("#webs")}
+                          whileHover={{ x: 4 }}
+                          whileTap={{ scale: 0.96 }}
+                          className="focus-ring mt-4 inline-flex items-center gap-1.5 rounded-full bg-ink px-4 py-2 text-[12px] font-semibold text-cream"
                         >
-                          ↓
-                        </motion.span>
-                      </motion.button>
+                          {t.hero.open}
+                          <motion.span
+                            animate={{ y: [0, 3, 0] }}
+                            transition={{ repeat: Infinity, duration: 1.4, ease: "easeInOut" }}
+                          >
+                            ↓
+                          </motion.span>
+                        </motion.button>
+                      </Reveal>
                     </div>
                   </motion.div>
                 </motion.div>

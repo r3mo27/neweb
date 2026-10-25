@@ -6,6 +6,7 @@ import { useRef, useState } from "react";
 import { projects, type Project } from "@/lib/data";
 import CardSwap, { Card, type CardSwapHandle } from "./CardSwap";
 import { useSite } from "./Providers";
+import { Reveal, Words } from "./Reveal";
 import { SectionFolder, SectionTitle } from "./SectionFolder";
 
 const spring = { type: "spring", stiffness: 210, damping: 26, mass: 0.9 } as const;
@@ -26,34 +27,40 @@ export function WebsSection() {
     <SectionFolder id="webs" label={t.sections.webs} index={1} className="paper">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         <SectionTitle className="text-ink">{t.webs.title}</SectionTitle>
-        <div role="tablist" aria-label={t.webs.tabs} className="flex flex-wrap gap-1.5 lg:mt-3">
-          {projects.map((p, i) => (
-            <button
-              key={p.id}
-              role="tab"
-              aria-selected={i === active}
-              onClick={() => pick(i)}
-              className="focus-ring relative rounded-md px-3 py-1.5 text-[11px] font-semibold text-ink/80 transition-colors hover:text-ink"
-            >
-              {i === active && (
-                <motion.span
-                  layoutId="web-tab"
-                  className="absolute inset-0 rounded-md bg-blue"
-                  transition={spring}
-                />
-              )}
-              <span
-                className={`relative transition-colors duration-300 ${i === active ? "text-cream" : ""}`}
+        <Reveal delay={0.2} y={16}>
+          <div role="tablist" aria-label={t.webs.tabs} className="flex flex-wrap gap-1.5 lg:mt-3">
+            {projects.map((p, i) => (
+              <button
+                key={p.id}
+                role="tab"
+                aria-selected={i === active}
+                onClick={() => pick(i)}
+                className="focus-ring relative rounded-md px-3 py-1.5 text-[11px] font-semibold text-ink/80 transition-colors hover:text-ink"
               >
-                0{i + 1} · {p.name}
-              </span>
-            </button>
-          ))}
-        </div>
+                {i === active && (
+                  <motion.span
+                    layoutId="web-tab"
+                    className="absolute inset-0 rounded-md bg-blue"
+                    transition={spring}
+                  />
+                )}
+                <span
+                  className={`relative transition-colors duration-300 ${i === active ? "text-cream" : ""}`}
+                >
+                  0{i + 1} · {p.name}
+                </span>
+              </button>
+            ))}
+          </div>
+        </Reveal>
       </div>
 
       <div className="mt-6 grid flex-1 items-center gap-12 lg:mt-2 lg:grid-cols-[1.45fr_1fr]">
-        <div className="relative mx-auto h-[min(52vw,420px)] w-full max-w-[780px] sm:h-[clamp(280px,58vh,460px)]">
+        <Reveal
+          delay={0.1}
+          y={48}
+          className="relative mx-auto h-[min(52vw,420px)] w-full max-w-[780px] sm:h-[clamp(280px,58vh,460px)]"
+        >
           <CardSwap
             ref={swapRef}
             width={640}
@@ -83,7 +90,7 @@ export function WebsSection() {
               </Card>
             ))}
           </CardSwap>
-        </div>
+        </Reveal>
 
         <div className="min-h-[230px]">
           <AnimatePresence mode="wait" initial={false}>
@@ -94,12 +101,24 @@ export function WebsSection() {
               exit={{ opacity: 0, x: -16 }}
               transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             >
-              <p className="mono text-[10px] text-blue">{text.kind}</p>
-              <h3 className="mt-2 text-[clamp(2.2rem,4vw,3.4rem)] font-extrabold leading-none tracking-[-0.04em] text-ink">
-                {project.name}
-              </h3>
-              <p className="mt-5 text-[16px] leading-relaxed text-ink/85">{text.lead}</p>
-              <p className="mt-3 text-[14px] leading-relaxed text-ink/60">{text.detail}</p>
+              <Words text={text.kind} className="mono text-[10px] text-blue" />
+              <Words
+                as="h3"
+                text={project.name}
+                delay={0.05}
+                stagger={0.08}
+                className="mt-2 text-[clamp(2.2rem,4vw,3.4rem)] font-extrabold leading-none tracking-[-0.04em] text-ink"
+              />
+              <Words
+                text={text.lead}
+                delay={0.15}
+                className="mt-5 text-[16px] leading-relaxed text-ink/85"
+              />
+              <Words
+                text={text.detail}
+                delay={0.3}
+                className="mt-3 text-[14px] leading-relaxed text-ink/60"
+              />
               {project.url ? (
                 <motion.a
                   href={project.url}
@@ -118,7 +137,7 @@ export function WebsSection() {
               )}
             </motion.div>
           </AnimatePresence>
-          <p className="mono mt-8 text-[10px] text-ink/40 max-lg:hidden">{t.webs.hint}</p>
+          <Words text={t.webs.hint} delay={0.4} className="mono mt-8 text-[10px] text-ink/40 max-lg:hidden" />
         </div>
       </div>
     </SectionFolder>

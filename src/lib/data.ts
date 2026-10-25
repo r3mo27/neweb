@@ -56,7 +56,7 @@ export const projects: Project[] = [
     name: "RemoCV",
     url: "https://webcurriculum-dusky.vercel.app",
     host: "webcurriculum-dusky.vercel.app",
-    image: "/webs/remocv.png",
+    image: "/webs/remocv.jpg",
     accent: "#0f9d76",
   },
 ];

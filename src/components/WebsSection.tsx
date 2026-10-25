@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import { projects, type Project } from "@/lib/data";
 import CardSwap, { Card, type CardSwapHandle } from "./CardSwap";
+import { useSite } from "./Providers";
 import { SectionFolder, SectionTitle } from "./SectionFolder";
 
 const spring = { type: "spring", stiffness: 210, damping: 26, mass: 0.9 } as const;
@@ -12,7 +13,9 @@ const spring = { type: "spring", stiffness: 210, damping: 26, mass: 0.9 } as con
 export function WebsSection() {
   const [active, setActive] = useState(0);
   const swapRef = useRef<CardSwapHandle>(null);
+  const { t } = useSite();
   const project = projects[active];
+  const text = t.webs.projects[project.id];
 
   const pick = (i: number) => {
     setActive(i);
@@ -20,10 +23,10 @@ export function WebsSection() {
   };
 
   return (
-    <SectionFolder id="webs" label="webs" index={1} className="paper">
+    <SectionFolder id="webs" label={t.sections.webs} index={1} className="paper">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-        <SectionTitle className="text-ink">Webs</SectionTitle>
-        <div role="tablist" aria-label="Proyectos" className="flex flex-wrap gap-1.5 lg:mt-3">
+        <SectionTitle className="text-ink">{t.webs.title}</SectionTitle>
+        <div role="tablist" aria-label={t.webs.tabs} className="flex flex-wrap gap-1.5 lg:mt-3">
           {projects.map((p, i) => (
             <button
               key={p.id}
@@ -91,12 +94,12 @@ export function WebsSection() {
               exit={{ opacity: 0, x: -16 }}
               transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             >
-              <p className="mono text-[10px] text-blue">{project.kind}</p>
+              <p className="mono text-[10px] text-blue">{text.kind}</p>
               <h3 className="mt-2 text-[clamp(2.2rem,4vw,3.4rem)] font-extrabold leading-none tracking-[-0.04em] text-ink">
                 {project.name}
               </h3>
-              <p className="mt-5 text-[16px] leading-relaxed text-ink/85">{project.lead}</p>
-              <p className="mt-3 text-[14px] leading-relaxed text-ink/60">{project.detail}</p>
+              <p className="mt-5 text-[16px] leading-relaxed text-ink/85">{text.lead}</p>
+              <p className="mt-3 text-[14px] leading-relaxed text-ink/60">{text.detail}</p>
               {project.url ? (
                 <motion.a
                   href={project.url}
@@ -106,18 +109,16 @@ export function WebsSection() {
                   whileTap={{ scale: 0.97 }}
                   className="focus-ring mt-5 inline-flex items-center gap-1 rounded-full bg-blue px-4 py-2 text-[12px] font-semibold text-cream"
                 >
-                  Abrir {project.host} ↗
+                  {t.webs.visit(project.host)}
                 </motion.a>
               ) : (
                 <p className="mono mt-5 inline-block rounded-full border border-ink/20 px-4 py-2 text-[11px] text-ink/60">
-                  Privada · demo bajo petición
+                  {t.webs.private}
                 </p>
               )}
             </motion.div>
           </AnimatePresence>
-          <p className="mono mt-8 text-[10px] text-ink/40 max-lg:hidden">
-            ← arrastra en cualquier dirección · autoplay · clic en una de atrás →
-          </p>
+          <p className="mono mt-8 text-[10px] text-ink/40 max-lg:hidden">{t.webs.hint}</p>
         </div>
       </div>
     </SectionFolder>
@@ -125,6 +126,7 @@ export function WebsSection() {
 }
 
 function BrowserWindow({ project }: { project: Project }) {
+  const { t } = useSite();
   return (
     <div className="r-sm flex h-full w-full flex-col overflow-hidden border border-ink/15 bg-[#e6e3da]">
       <div className="flex h-7 shrink-0 items-center gap-1.5 border-b border-ink/10 px-3">
@@ -139,7 +141,7 @@ function BrowserWindow({ project }: { project: Project }) {
         {project.image ? (
           <Image
             src={project.image}
-            alt={`Captura de ${project.name}`}
+            alt={t.webs.screenshot(project.name)}
             fill
             sizes="(max-width: 1024px) 92vw, 640px"
             className="pointer-events-none object-cover object-top"
@@ -156,6 +158,7 @@ function BrowserWindow({ project }: { project: Project }) {
 
 /** Kokoda sin captura pública: mini interfaz de rankings. */
 function KokodaMock() {
+  const { t } = useSite();
   const rows = [
     ["1", "Rocolo_27", "S", 48],
     ["2", "Nebula", "A", 41],
@@ -170,7 +173,7 @@ function KokodaMock() {
           KOKODA <span className="text-[#a78bfa]">AWAKENED</span>
         </span>
         <span className="mono rounded-full bg-[#7c3aed] px-2 py-0.5 text-[clamp(6px,1.1vw,9px)]">
-          Temporada 3
+          {t.webs.season}
         </span>
       </div>
       <div className="mt-[4%] grid flex-1 grid-cols-[1.4fr_1fr] gap-[4%]">

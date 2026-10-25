@@ -28,6 +28,7 @@ export const metadata: Metadata = {
   authors: [{ name: contact.name, url: contact.linkedin }],
   keywords: [
     "Rubén Remacha",
+    "web developer Zaragoza",
     "desarrollador web Zaragoza",
     "backend Java",
     "Spring Boot",
@@ -37,7 +38,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
-    locale: "es_ES",
+    locale: "en_US",
+    alternateLocale: "es_ES",
     url: "/",
     siteName: "rem0",
     title: siteTitle,
@@ -58,7 +60,7 @@ const personJsonLd = {
   name: contact.name,
   url: siteUrl,
   email: `mailto:${contact.email}`,
-  jobTitle: "Desarrollador full-stack",
+  jobTitle: "Full-stack developer",
   address: { "@type": "PostalAddress", addressLocality: "Zaragoza", addressCountry: "ES" },
   sameAs: [contact.linkedin, contact.github],
 };
@@ -66,7 +68,7 @@ const personJsonLd = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
-      lang="es"
+      lang="en"
       className={`${archivo.variable} ${inter.variable} ${jetbrains.variable} antialiased`}
     >
       <body>

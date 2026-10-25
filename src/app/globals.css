@@ -121,6 +121,19 @@ body {
   border-color: color-mix(in srgb, var(--c-cream) 55%, transparent);
 }
 
+/* Mientras se arrastra una hoja arrugada, el cursor de agarre manda en toda la página */
+html.is-grabbing,
+html.is-grabbing * {
+  cursor: grabbing !important;
+}
+
+/* Carpeta con un papel en la mano: sin recorte y por encima del resto para que el papel
+   pueda pasearse por toda la página. Gana a los estilos en línea que pone el cajón. */
+section[data-lifted] {
+  clip-path: none !important;
+  z-index: 40 !important;
+}
+
 .focus-ring:focus-visible {
   outline: 3px solid var(--c-pink);
   outline-offset: 3px;

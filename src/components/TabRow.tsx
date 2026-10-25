@@ -19,11 +19,11 @@ export const tabColors: Record<SectionId, string> = {
  * `only`: en una sección solo se ve su pestaña; las demás ocupan su sitio, invisibles.
  */
 export function TabRow({ only }: { only?: SectionId }) {
-  const { scrollTo } = useSite();
+  const { scrollTo, t } = useSite();
   return (
     <nav
       data-stack-nav
-      aria-label={only ? undefined : "Secciones"}
+      aria-label={only ? undefined : t.sectionsNav}
       aria-hidden={only ? true : undefined}
       // En una sección la fila no debe tapar las pestañas de las carpetas de atrás: solo su
       // propia pestaña recibe clics.
@@ -44,7 +44,7 @@ export function TabRow({ only }: { only?: SectionId }) {
             } ${mine ? tabColors[s.id] : "bg-navy text-cream hover:text-pink"}`}
           >
             <span className="max-sm:hidden">{s.n} · </span>
-            {s.label}
+            {t.sections[s.id]}
           </button>
         );
       })}

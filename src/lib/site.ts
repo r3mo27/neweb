@@ -10,4 +10,4 @@ export const siteUrl =
 
 export const siteTitle = "rem0 · Rubén Remacha";
 export const siteDescription =
-  "Rubén Remacha, desarrollador full-stack en Zaragoza. Webs a medida y backend en Java, premiado en NASA Space Apps y The Wave.";
+  "Rubén Remacha, full-stack developer in Zaragoza, Spain. Custom websites and Java backends, award-winning at NASA Space Apps and The Wave.";

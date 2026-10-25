@@ -11,6 +11,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { copy, defaultLang, langs, type Copy, type Lang } from "@/lib/i18n";
 
 export type Shape = "redonda" | "recta" | "blanda";
 
@@ -20,8 +21,9 @@ export type Tweaks = {
   colors: { blue: string; navy: string; pink: string; cream: string; ink: string };
 };
 
+/** Vacío = el lema traducido del idioma activo. */
 export const defaultTweaks: Tweaks = {
-  motto: "Hago webs. Y lo que va detrás.",
+  motto: "",
   shape: "redonda",
   colors: {
     blue: "#2536d8",
@@ -42,6 +44,9 @@ type Ctx = {
   tweaks: Tweaks;
   setTweaks: (t: Tweaks) => void;
   scrollTo: (target: string) => void;
+  lang: Lang;
+  setLang: (lang: Lang) => void;
+  t: Copy;
 };
 
 const SiteContext = createContext<Ctx | null>(null);
@@ -52,18 +57,40 @@ export function useSite() {
   return ctx;
 }
 
+/** El lema que ve el usuario: uno personalizado gana; los de serie siguen al idioma. */
+export function useMotto() {
+  const { tweaks, t } = useSite();
+  const stock = !tweaks.motto || langs.some((l) => copy[l].hero.motto === tweaks.motto);
+  return stock ? t.hero.motto : tweaks.motto;
+}
+
 const STORAGE_KEY = "rem0-tweaks";
+const LANG_KEY = "rem0-lang";
 
 export function Providers({ children }: { children: ReactNode }) {
   const lenisRef = useRef<Lenis | null>(null);
   const [tweaks, setTweaksState] = useState<Tweaks>(defaultTweaks);
+  const [lang, setLangState] = useState<Lang>(defaultLang);
 
   useEffect(() => {
+    // Se lee tras montar para que el HTML del servidor y el primer render coincidan.
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      // Se lee tras montar para que el HTML del servidor y el primer render coincidan.
       // eslint-disable-next-line react-hooks/set-state-in-effect
       if (saved) setTweaksState({ ...defaultTweaks, ...JSON.parse(saved) });
+      const savedLang = localStorage.getItem(LANG_KEY);
+      if (langs.includes(savedLang as Lang)) setLangState(savedLang as Lang);
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
+
+  const setLang = useCallback((l: Lang) => {
+    setLangState(l);
+    try {
+      localStorage.setItem(LANG_KEY, l);
     } catch {}
   }, []);
 
@@ -124,7 +151,7 @@ export function Providers({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <SiteContext.Provider value={{ tweaks, setTweaks, scrollTo }}>
+    <SiteContext.Provider value={{ tweaks, setTweaks, scrollTo, lang, setLang, t: copy[lang] }}>
       <MotionConfig reducedMotion="user">{children}</MotionConfig>
     </SiteContext.Provider>
   );

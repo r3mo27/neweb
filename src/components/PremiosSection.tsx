@@ -1,45 +1,37 @@
 "use client";
 
-import { AnimatePresence, motion, type Variants } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import { awards, type Award } from "@/lib/data";
+import Folder, { type FolderEntry } from "./Folder";
+import { useSite } from "./Providers";
 import { SectionFolder, SectionTitle } from "./SectionFolder";
 
 const spring = { type: "spring", stiffness: 260, damping: 22 } as const;
-
-const front: Variants = {
-  rest: { rotateX: 0 },
-  open: { rotateX: -24 },
-};
-const photo: Variants = {
-  rest: { y: 0, rotate: -5, x: 0 },
-  open: { y: -44, rotate: -11, x: -18 },
-};
-const photo2: Variants = {
-  rest: { y: 8, rotate: 2, x: 0 },
-  open: { y: -30, rotate: 1, x: 6 },
-};
-const diploma: Variants = {
-  rest: { y: 0, rotate: 4, x: 0 },
-  open: { y: -50, rotate: 10, x: 22 },
-};
+const noop = () => () => {};
 
 export function PremiosSection() {
-  const [open, setOpen] = useState<Award | null>(null);
+  const { t } = useSite();
+  const [open, setOpen] = useState<{ award: Award; photo: number } | null>(null);
+  const mounted = useSyncExternalStore(
+    noop,
+    () => true,
+    () => false,
+  );
 
   return (
     <SectionFolder
       id="premios"
-      label="premios"
+      label={t.sections.premios}
       index={3}
       className="bg-pink"
     >
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <SectionTitle className="text-ink">Premios</SectionTitle>
+        <SectionTitle className="text-ink">{t.premios.title}</SectionTitle>
         <p className="max-w-[340px] text-[15px] leading-relaxed text-ink/80 lg:mt-4">
-          Con Cazadores de Rocolos, mi equipo. Cada carpeta lleva sus fotos dentro: pulsa para
-          abrirla.
+          {t.premios.intro}
         </p>
       </div>
 
@@ -52,91 +44,91 @@ export function PremiosSection() {
             viewport={{ once: true, amount: 0.35 }}
             transition={{ ...spring, delay: i * 0.09 }}
           >
-            <MiniFolder award={a} onOpen={() => setOpen(a)} />
+            <AwardFolder award={a} onOpen={(photo) => setOpen({ award: a, photo })} />
             <h3 className="mt-5 text-[clamp(1.1rem,1.5vw,1.35rem)] font-extrabold leading-snug tracking-[-0.02em] text-ink">
-              {a.title}
+              {t.premios.awards[a.id].title}
             </h3>
-            <p className="mt-2 text-[14px] leading-relaxed text-ink/70">{a.text}</p>
+            <p className="mt-2 text-[14px] leading-relaxed text-ink/70">
+              {t.premios.awards[a.id].text}
+            </p>
           </motion.div>
         ))}
       </div>
 
-      <AnimatePresence>
-        {open && <Gallery award={open} onClose={() => setOpen(null)} />}
-      </AnimatePresence>
+      {/* En el body: dentro de la carpeta el clip-path y los transforms del cajón la recortarían */}
+      {mounted &&
+        createPortal(
+          <AnimatePresence>
+            {open && (
+              <Gallery award={open.award} start={open.photo} onClose={() => setOpen(null)} />
+            )}
+          </AnimatePresence>,
+          document.body,
+        )}
     </SectionFolder>
   );
 }
 
-function MiniFolder({ award, onOpen }: { award: Award; onOpen: () => void }) {
-  return (
-    <motion.button
-      onClick={onOpen}
-      initial="rest"
-      animate="rest"
-      whileHover="open"
-      whileFocus="open"
-      whileTap={{ scale: 0.97 }}
-      aria-label={`Abrir fotos: ${award.title}`}
-      className="focus-ring group relative block w-full cursor-pointer pt-7 text-left [perspective:900px]"
-    >
-      {/* Pestaña + fondo */}
-      <span className="r-tab mono absolute left-0 top-0 h-[29px] bg-navy px-3 pt-1.5 text-[11px] text-cream">
-        {award.tab}
-      </span>
-      <span className="r-sm relative block h-[clamp(200px,30vh,290px)] bg-navy" style={{ borderTopLeftRadius: 0 }}>
-        {/* Papeles: fotos y diploma */}
-        <motion.span
-          variants={photo2}
-          transition={spring}
-          className="absolute left-[10%] top-4 block h-[74%] w-[40%] overflow-hidden rounded-[3px] bg-white p-1 shadow-md"
-        >
-          <span className="relative block h-full w-full">
-            <Image src={award.photos[1]} alt="" fill sizes="200px" className="object-cover" />
-          </span>
-        </motion.span>
-        <motion.span
-          variants={photo}
-          transition={spring}
-          className="absolute left-[6%] top-3 block h-[74%] w-[42%] overflow-hidden rounded-[3px] bg-white p-1 shadow-md"
-        >
-          <span className="relative block h-full w-full">
-            <Image src={award.photos[0]} alt="" fill sizes="200px" className="object-cover" />
-          </span>
-        </motion.span>
-        <motion.span
-          variants={diploma}
-          transition={spring}
-          className="paper absolute right-[7%] top-3 flex h-[76%] w-[44%] flex-col items-center rounded-[3px] border border-ink/10 px-3 pt-5 text-center shadow-md"
-        >
-          <span className="mono text-[8px] tracking-[0.2em] text-ink/50">DIPLOMA</span>
-          <span className="mt-2 text-[clamp(13px,1.3vw,17px)] font-extrabold leading-tight text-ink">{award.diploma}</span>
-          <span className="mt-2 block h-px w-3/4 bg-ink/20" />
-          <span className="mt-1 block h-px w-1/2 bg-ink/20" />
-          <span className="mt-auto mb-2 grid size-6 place-items-center rounded-full border-2 border-pink text-[9px] text-pink">
-            ★
-          </span>
-        </motion.span>
+/** Carpeta de React Bits con dos fotos y el diploma. Al pulsar un papel se abre la galería. */
+function AwardFolder({ award, onOpen }: { award: Award; onOpen: (photo: number) => void }) {
+  const { t } = useSite();
+  const text = t.premios.awards[award.id];
+  const [isOpen, setIsOpen] = useState(false);
+  const items: FolderEntry[] = [
+    { image: award.photos[0], alt: t.premios.photoOf(text.title, 1) },
+    { image: award.photos[1], alt: t.premios.photoOf(text.title, 2) },
+    { content: <Diploma label={t.premios.diploma} text={text.diploma} /> },
+  ];
 
-        {/* Frontal */}
-        <motion.span
-          variants={front}
-          transition={spring}
-          style={{ transformOrigin: "50% 100%" }}
-          className="r-sm absolute inset-x-0 bottom-0 flex h-[60%] items-end bg-blue p-4 shadow-[0_-10px_24px_-12px_rgba(0,0,0,0.5)]"
-        >
-          <span className="mono text-[12px] text-cream">{award.date}</span>
-          <span className="mono ml-auto text-[12px] text-cream/70 transition-colors group-hover:text-pink">
-            {award.photos.length} fotos ↗
-          </span>
-        </motion.span>
-      </span>
-    </motion.button>
+  return (
+    // Abierta, sus papeles se salen de la columna: tiene que quedar por encima de las vecinas.
+    <div className={`relative flex flex-col items-center ${isOpen ? "z-20" : "z-0"}`}>
+      <Folder
+        label={award.tab}
+        items={items}
+        color="#1a24a6"
+        paperColor="#f2efe6"
+        tabPosition="left"
+        size={1.3}
+        open={isOpen}
+        onOpenChange={setIsOpen}
+        zoomOnClick={false}
+        onItemClick={(_, index) => onOpen(index < 2 ? index : 0)}
+      />
+      <p className="mono mt-3 flex w-full justify-between text-[11px] text-ink/60">
+        <span>{text.date}</span>
+        <span>{t.premios.photos(award.photos.length)}</span>
+      </p>
+    </div>
   );
 }
 
-function Gallery({ award, onClose }: { award: Award; onClose: () => void }) {
-  const [i, setI] = useState(0);
+function Diploma({ label, text }: { label: string; text: string }) {
+  return (
+    <div className="paper flex h-full flex-col items-center px-3 pt-5 text-center">
+      <span className="mono text-[8px] tracking-[0.2em] text-ink/50">{label}</span>
+      <span className="mt-2 text-[15px] font-extrabold leading-tight text-ink">{text}</span>
+      <span className="mt-2 block h-px w-3/4 bg-ink/20" />
+      <span className="mt-1 block h-px w-1/2 bg-ink/20" />
+      <span className="mt-auto mb-3 grid size-6 place-items-center rounded-full border-2 border-pink text-[9px] text-pink">
+        ★
+      </span>
+    </div>
+  );
+}
+
+function Gallery({
+  award,
+  start,
+  onClose,
+}: {
+  award: Award;
+  start: number;
+  onClose: () => void;
+}) {
+  const { t } = useSite();
+  const title = t.premios.awards[award.id].title;
+  const [i, setI] = useState(start);
   const n = award.photos.length;
 
   useEffect(() => {
@@ -153,79 +145,116 @@ function Gallery({ award, onClose }: { award: Award; onClose: () => void }) {
     };
   }, [n, onClose]);
 
+  const go = (step: number) => setI((x) => (x + step + n) % n);
+
   return (
     <motion.div
       role="dialog"
       aria-modal="true"
-      aria-label={award.title}
+      aria-label={title}
       data-lenis-prevent
-      className="fixed inset-0 z-50 grid place-items-center bg-ink/70 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-[80] flex flex-col items-center justify-center gap-4 bg-ink/85 px-4 pt-14 pb-5 backdrop-blur-md sm:px-20 sm:pt-16 sm:pb-6"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
+      transition={{ duration: 0.25 }}
       onClick={onClose}
     >
-      <motion.div
-        initial={{ y: 80, scale: 0.92, rotate: -2 }}
-        animate={{ y: 0, scale: 1, rotate: 0 }}
-        exit={{ y: 60, scale: 0.95, opacity: 0 }}
-        transition={spring}
-        onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-[860px]"
+      <button
+        onClick={onClose}
+        aria-label={t.premios.close}
+        className="focus-ring absolute top-4 right-4 grid size-10 place-items-center rounded-full bg-cream text-[18px] leading-none text-ink transition-transform hover:scale-105 sm:top-5 sm:right-5"
       >
-        <span className="r-tab mono inline-block bg-navy px-4 pt-2 pb-1.5 text-[11px] text-cream">
+        ×
+      </button>
+
+      {/* La foto entera, con su proporción, ajustada a la pantalla */}
+      <div className="relative flex min-h-0 w-full flex-1 items-center justify-center">
+        <AnimatePresence initial={false} mode="wait">
+          <motion.div
+            key={award.photos[i]}
+            initial={{ opacity: 0, y: 24, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
+            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            drag={n > 1 ? "x" : false}
+            dragSnapToOrigin
+            dragElastic={0.2}
+            onDragEnd={(_, info) => {
+              if (Math.abs(info.offset.x) > 80) go(info.offset.x < 0 ? 1 : -1);
+            }}
+            onClick={(e) => e.stopPropagation()}
+            className="cursor-grab active:cursor-grabbing"
+          >
+            <Image
+              src={award.photos[i]}
+              alt={t.premios.photoOf(title, i + 1)}
+              width={1600}
+              height={1200}
+              sizes="(max-width: 768px) 100vw, 1200px"
+              className="pointer-events-none block h-auto max-h-[calc(100svh-180px)] w-auto max-w-full select-none rounded-[14px] shadow-[0_30px_80px_-24px_rgba(0,0,0,0.85)]"
+              priority
+            />
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {n > 1 && (
+        <>
+          <GalleryArrow side="left" label={t.premios.prev} onClick={() => go(-1)} />
+          <GalleryArrow side="right" label={t.premios.next} onClick={() => go(1)} />
+        </>
+      )}
+
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="flex max-w-full flex-wrap items-center justify-center gap-x-4 gap-y-3"
+      >
+        <span className="mono rounded-full bg-pink px-3 py-1.5 text-[11px] text-ink">
           {award.tab} · {i + 1}/{n}
         </span>
-        <div className="r bg-navy p-3 sm:p-4" style={{ borderTopLeftRadius: 0 }}>
-          <div className="relative aspect-[4/3] overflow-hidden rounded-[10px] bg-ink">
-            <AnimatePresence initial={false} mode="popLayout">
-              <motion.div
-                key={award.photos[i]}
-                className="absolute inset-0"
-                initial={{ opacity: 0, scale: 1.04 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                drag="x"
-                dragSnapToOrigin
-                onDragEnd={(_, info) => {
-                  if (Math.abs(info.offset.x) > 80)
-                    setI((x) => (x + (info.offset.x < 0 ? 1 : -1) + n) % n);
-                }}
-              >
-                <Image
-                  src={award.photos[i]}
-                  alt={`${award.title}, foto ${i + 1}`}
-                  fill
-                  sizes="860px"
-                  className="pointer-events-none object-contain"
-                  priority
-                />
-              </motion.div>
-            </AnimatePresence>
-          </div>
-          <div className="mt-3 flex items-center gap-2">
-            {award.photos.map((p, k) => (
-              <button
-                key={p}
-                onClick={() => setI(k)}
-                aria-label={`Foto ${k + 1}`}
-                className={`focus-ring relative h-12 w-16 overflow-hidden rounded-md transition-all duration-300 ${
-                  k === i ? "ring-2 ring-pink" : "opacity-50 hover:opacity-90"
-                }`}
-              >
-                <Image src={p} alt="" fill sizes="64px" className="object-cover" />
-              </button>
-            ))}
+        <span className="text-[14px] font-semibold text-cream">{title}</span>
+        <div className="flex gap-2">
+          {award.photos.map((p, k) => (
             <button
-              onClick={onClose}
-              className="focus-ring ml-auto rounded-full bg-cream px-4 py-2 text-[12px] font-semibold text-ink"
+              key={p}
+              onClick={() => setI(k)}
+              aria-label={t.premios.photo(k + 1)}
+              aria-current={k === i}
+              className={`focus-ring relative h-10 w-14 overflow-hidden rounded-md transition-all duration-300 ${
+                k === i ? "ring-2 ring-pink" : "opacity-45 hover:opacity-90"
+              }`}
             >
-              Cerrar
+              <Image src={p} alt="" fill sizes="56px" className="object-cover" />
             </button>
-          </div>
+          ))}
         </div>
-      </motion.div>
+      </div>
     </motion.div>
+  );
+}
+
+function GalleryArrow({
+  side,
+  label,
+  onClick,
+}: {
+  side: "left" | "right";
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick();
+      }}
+      aria-label={label}
+      className={`focus-ring absolute top-1/2 hidden size-11 -translate-y-1/2 place-items-center rounded-full bg-cream/90 text-[18px] text-ink transition-transform hover:scale-105 sm:grid ${
+        side === "left" ? "left-5" : "right-5"
+      }`}
+    >
+      {side === "left" ? "←" : "→"}
+    </button>
   );
 }

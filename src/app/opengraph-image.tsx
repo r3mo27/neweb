@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
 
-export const alt = "rem0 · Rubén Remacha — webs y backend en Zaragoza";
+export const alt = "rem0 · Rubén Remacha — websites and backend from Zaragoza";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -92,11 +92,11 @@ export default function Image() {
                 maxWidth: 640,
               }}
             >
-              Hago webs. Y lo que va detrás.
+              I build websites. And everything behind them.
             </div>
             <div style={{ display: "flex", flexDirection: "column", color: ink, fontSize: 24 }}>
-              <span>21 años · Zaragoza</span>
-              <span>+10 proyectos</span>
+              <span>21 · Zaragoza</span>
+              <span>+10 projects</span>
             </div>
           </div>
         </div>

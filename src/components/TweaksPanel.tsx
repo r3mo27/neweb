@@ -33,7 +33,7 @@ export function TweaksPanel() {
 }
 
 function Panel() {
-  const { tweaks, setTweaks } = useSite();
+  const { tweaks, setTweaks, t } = useSite();
   const [open, setOpen] = useState(false);
 
   return (
@@ -55,6 +55,7 @@ function Panel() {
               Lema
               <textarea
                 value={tweaks.motto}
+                placeholder={t.hero.motto}
                 onChange={(e) => setTweaks({ ...tweaks, motto: e.target.value })}
                 rows={2}
                 className="mt-1 w-full resize-none rounded-md border border-ink/15 bg-white/70 px-2 py-1.5 text-[13px] font-normal outline-none focus:border-blue"

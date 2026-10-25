@@ -2,6 +2,7 @@
 
 import { motion, useScroll, useTransform } from "motion/react";
 import { useEffect, useRef, useState } from "react";
+import { useSite } from "./Providers";
 
 const MAJOR = 160;
 
@@ -10,6 +11,7 @@ const MAJOR = 160;
  * cota vertical con el alto real del cajón y un cajetín. Todo decorativo y fijo detrás.
  */
 export function Blueprint() {
+  const { t } = useSite();
   const { scrollY } = useScroll();
   // La cuadrícula baja más despacio que el contenido; con el módulo nunca se acaba.
   const gridY = useTransform(scrollY, (y) => -((y * 0.35) % MAJOR));
@@ -47,7 +49,7 @@ export function Blueprint() {
         <span className="absolute -left-[3px] top-0 h-px w-[7px] bg-cream/50" />
         <span className="absolute -left-[3px] bottom-0 h-px w-[7px] bg-cream/50" />
         <span className="mono absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-90 whitespace-nowrap bg-blue px-2 text-[10px] text-cream/60">
-          altura cajón · {folderH ?? "—"}
+          {t.blueprint.height} · {folderH ?? "—"}
         </span>
       </div>
 

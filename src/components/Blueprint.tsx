@@ -2,6 +2,7 @@
 
 import { motion, useScroll, useTransform } from "motion/react";
 import { useEffect, useRef, useState } from "react";
+import { FANCY_SCROLL, useMedia } from "@/lib/useMedia";
 import { useSite } from "./Providers";
 
 const MAJOR = 160;
@@ -15,6 +16,8 @@ export function Blueprint() {
   const { scrollY } = useScroll();
   // La cuadrícula baja más despacio que el contenido; con el módulo nunca se acaba.
   const gridY = useTransform(scrollY, (y) => -((y * 0.35) % MAJOR));
+  // En móvil el parallax iría un frame por detrás del scroll nativo y la cuadrícula temblaría.
+  const parallax = useMedia(FANCY_SCROLL);
   const [folderH, setFolderH] = useState<number | null>(null);
 
   useEffect(() => {
@@ -35,7 +38,7 @@ export function Blueprint() {
     <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
       <motion.div
         className="blueprint-grid absolute inset-x-0 -top-[160px] h-[calc(100%+320px)]"
-        style={{ y: gridY }}
+        style={{ y: parallax ? gridY : 0 }}
       />
 
       {/* Marcas de corte */}

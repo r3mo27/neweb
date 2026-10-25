@@ -12,6 +12,7 @@ import {
   type ReactNode,
 } from "react";
 import { copy, defaultLang, langs, type Copy, type Lang } from "@/lib/i18n";
+import { TOUCH } from "@/lib/useMedia";
 
 export type Shape = "redonda" | "recta" | "blanda";
 
@@ -119,6 +120,8 @@ export function Providers({ children }: { children: ReactNode }) {
     history.scrollRestoration = "manual";
     window.scrollTo(0, 0);
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // En táctil Lenis no suaviza nada (el dedo usa el scroll nativo) y solo añadiría trabajo por frame.
+    if (window.matchMedia(TOUCH).matches) return;
     const lenis = new Lenis({ lerp: 0.09, wheelMultiplier: 0.95 });
     lenisRef.current = lenis;
     let raf = 0;

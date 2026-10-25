@@ -5,22 +5,13 @@ import Image from "next/image";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { awards, type Award } from "@/lib/data";
+import { useMedia } from "@/lib/useMedia";
 import Folder, { type FolderEntry } from "./Folder";
 import { useSite } from "./Providers";
 import { SectionFolder, SectionTitle } from "./SectionFolder";
 
 const spring = { type: "spring", stiffness: 260, damping: 22 } as const;
 const noop = () => () => {};
-
-/* En pantallas bajas las carpetas encogen para que el cajón quepa entero, con sus pestañas */
-const SHORT = "(max-height: 760px)";
-const isShort = () => window.matchMedia(SHORT).matches;
-function subscribeShort(onChange: () => void) {
-  const media = window.matchMedia(SHORT);
-  media.addEventListener("change", onChange);
-  return () => media.removeEventListener("change", onChange);
-}
-
 export function PremiosSection() {
   const { t } = useSite();
   const [open, setOpen] = useState<{ award: Award; photo: number } | null>(null);
@@ -83,7 +74,8 @@ function AwardFolder({ award, onOpen }: { award: Award; onOpen: (photo: number) 
   const { t } = useSite();
   const text = t.premios.awards[award.id];
   const [isOpen, setIsOpen] = useState(false);
-  const short = useSyncExternalStore(subscribeShort, isShort, () => false);
+  // En pantallas bajas las carpetas encogen para que el cajón quepa entero, con sus pestañas.
+  const short = useMedia("(max-height: 760px)");
   const items: FolderEntry[] = [
     { image: award.photos[0], alt: t.premios.photoOf(text.title, 1) },
     { image: award.photos[1], alt: t.premios.photoOf(text.title, 2) },

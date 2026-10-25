@@ -22,6 +22,9 @@ export function TrayectoriaSection() {
         {copy.trayectoria.timeline.map((t, i) => (
           <motion.li
             key={i}
+            // Capa propia fija: si no, al acabar la entrada el navegador repinta la hoja girada
+            // entera y en móvil se queda congelado casi un segundo.
+            className="will-change-transform"
             initial={{ y: 70, opacity: 0, rotate: tilt[i] * 4 }}
             whileInView={{ y: 0, opacity: 1, rotate: tilt[i] }}
             viewport={{ once: true, amount: 0.4 }}

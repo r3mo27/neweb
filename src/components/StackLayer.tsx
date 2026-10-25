@@ -16,6 +16,7 @@ import {
   useRef,
   type ReactNode,
 } from "react";
+import { FANCY_SCROLL, TOUCH, useMedia } from "@/lib/useMedia";
 
 /* ------------------------------------------------------------------------------------------
  * El cajón. La capa 0 es la carpeta rem0 (el índice) y cada sección es una carpeta que sube
@@ -64,10 +65,22 @@ function offsetWithin(el: HTMLElement, root: HTMLElement) {
 
 export function Stack({ children }: { children: ReactNode }) {
   const layers = useRef(new Map<number, Layer>());
+  const viewport = useRef({ w: 0, h: 0 });
+
+  // En táctil la barra de direcciones cambia el alto al hacer scroll: recolocar el cajón por eso
+  // movería todo lo de debajo a mitad de gesto. Ahí el alto solo se renueva si cambia el ancho.
+  const measureViewport = useCallback(() => {
+    const w = window.innerWidth;
+    const touch = window.matchMedia(TOUCH).matches;
+    if (!touch || w !== viewport.current.w || !viewport.current.h) {
+      viewport.current = { w, h: window.innerHeight };
+    }
+    return viewport.current.h;
+  }, []);
 
   const update = useCallback(() => {
     const s = window.scrollY;
-    const vh = window.innerHeight;
+    const vh = viewport.current.h;
     if (!vh) return;
     const order = [...layers.current.keys()].sort((a, b) => b - a);
     let next: (Layer & { visual: number }) | null = null;
@@ -92,7 +105,7 @@ export function Stack({ children }: { children: ReactNode }) {
   }, []);
 
   const layout = useCallback(() => {
-    const vh = window.innerHeight;
+    const vh = measureViewport();
     const all = [...layers.current.entries()].sort((a, b) => a[0] - b[0]).map(([, l]) => l);
     if (!vh || !all.length) return;
 
@@ -142,7 +155,7 @@ export function Stack({ children }: { children: ReactNode }) {
       l.anchor.dataset.stuckAt = String(Math.max(0, Math.round(l.layoutTop - l.sticky)));
     });
     update();
-  }, [update]);
+  }, [update, measureViewport]);
 
   const register = useCallback(
     (i: number, layer: Layer | null) => {
@@ -159,14 +172,19 @@ export function Stack({ children }: { children: ReactNode }) {
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(layout);
     };
-    window.addEventListener("resize", schedule);
+    const onResize = () => {
+      const { w, h } = viewport.current;
+      if (window.innerWidth === w && measureViewport() === h) return;
+      schedule();
+    };
+    window.addEventListener("resize", onResize);
     // Las fuentes cambian el alto de los textos al cargar.
     document.fonts?.ready.then(schedule);
     return () => {
       cancelAnimationFrame(raf);
-      window.removeEventListener("resize", schedule);
+      window.removeEventListener("resize", onResize);
     };
-  }, [layout]);
+  }, [layout, measureViewport]);
 
   const { scrollY } = useScroll();
   useMotionValueEvent(scrollY, "change", update);
@@ -248,6 +266,9 @@ export function StackLayer({
   const rotateX = useTransform(e, [0, 1], [rise ? 28 : 0, 0]);
   const scale = useTransform(e, [0, 1], [rise ? 0.88 : 1, 1]);
   const lift = useTransform(e, [0, 1], [rise ? 60 : 0, 0]);
+  // En móvil el scroll va por su cuenta y un giro calculado en cada frame llega tarde y tiembla:
+  // las carpetas suben tal cual, solo con el sticky nativo.
+  const fancy = useMedia(FANCY_SCROLL);
 
   return (
     <>
@@ -259,7 +280,13 @@ export function StackLayer({
         className={`sticky ${className}`}
         style={{ top, zIndex: index, clipPath, perspective: 1600 }}
       >
-        <motion.div style={{ rotateX, scale, y: lift, transformOrigin: "50% 100%" }}>
+        <motion.div
+          style={
+            fancy
+              ? { rotateX, scale, y: lift, transformOrigin: "50% 100%" }
+              : { rotateX: 0, scale: 1, y: 0 }
+          }
+        >
           <CoverContext.Provider value={cover}>{children}</CoverContext.Provider>
         </motion.div>
       </motion.section>

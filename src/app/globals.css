@@ -1,26 +1,133 @@
 @import "tailwindcss";
 
+/* Los 5 colores y la forma se pueden cambiar en vivo desde el panel de Tweaks. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --c-blue: #2536d8;
+  --c-navy: #1a24a6;
+  --c-pink: #f9b6d0;
+  --c-cream: #f2efe6;
+  --c-ink: #11142e;
+  --radius: 22px;
+  /* Alto común de las carpetas: rem0 y todas las secciones encajan en el mismo hueco */
+  --folder-h: min(calc(100vh - 230px), 860px);
+  --radius-sm: 12px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-blue: var(--c-blue);
+  --color-navy: var(--c-navy);
+  --color-pink: var(--c-pink);
+  --color-cream: var(--c-cream);
+  --color-ink: var(--c-ink);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-archivo);
+  --font-mono: var(--font-jetbrains);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--c-blue);
+  color-scheme: light;
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* El azul lo pinta <html>; si el body tuviera fondo taparía el plano técnico (z-index -10). */
+  background: transparent;
+  color: var(--c-ink);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+::selection {
+  background: var(--c-pink);
+  color: var(--c-ink);
+}
+
+.display {
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-weight: 900;
+  font-stretch: 75%;
+  font-variation-settings: "wdth" 68;
+  letter-spacing: -0.045em;
+  word-spacing: 0.16em;
+  line-height: 0.88;
+}
+
+.mono {
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  letter-spacing: 0.02em;
+}
+
+.r {
+  border-radius: var(--radius);
+}
+.r-sm {
+  border-radius: var(--radius-sm);
+}
+.r-tab {
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+}
+
+/* Textura de papel suave para las hojas crema */
+.paper {
+  background-color: var(--c-cream);
+  background-image: radial-gradient(
+      circle at 20% 0%,
+      rgba(255, 255, 255, 0.6),
+      transparent 60%
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 23px,
+      rgba(17, 20, 46, 0.035) 23px 24px
+    );
+}
+
+.folder-shadow {
+  box-shadow:
+    0 -1px 0 rgba(255, 255, 255, 0.12) inset,
+    0 -18px 40px -24px rgba(5, 8, 40, 0.55);
+}
+
+/* Plano técnico: cuadrícula fina cada 32px y gruesa cada 160px, en el color del papel */
+.blueprint-grid {
+  --line-minor: color-mix(in srgb, var(--c-cream) 7%, transparent);
+  --line-major: color-mix(in srgb, var(--c-cream) 16%, transparent);
+  background-image:
+    linear-gradient(var(--line-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line-major) 1px, transparent 1px),
+    linear-gradient(var(--line-minor) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line-minor) 1px, transparent 1px);
+  background-size:
+    160px 160px,
+    160px 160px,
+    32px 32px,
+    32px 32px;
+  background-position: center top;
+}
+
+.crop {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-color: color-mix(in srgb, var(--c-cream) 55%, transparent);
+}
+
+.focus-ring:focus-visible {
+  outline: 3px solid var(--c-pink);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }

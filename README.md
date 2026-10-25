@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# rem0 · portfolio de Rubén Remacha
 
-## Getting Started
+Portfolio en Next.js con forma de cajón de carpetas: la carpeta **rem0** es el índice y cada
+sección (webs, trayectoria, premios, contacto) es una carpeta que sube desde abajo y se encaja
+dentro, con su pestaña encima de la del índice.
 
-First, run the development server:
+## Desarrollo
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abre http://localhost:3000. En desarrollo aparece el panel **tweaks** (abajo a la derecha) para
+cambiar el lema, la forma de las carpetas y los 5 colores. En producción solo sale si añades
+`?tweaks` a la URL.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Publicar en Vercel
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Sube el repositorio a GitHub.
+2. En [vercel.com/new](https://vercel.com/new) importa el repositorio (framework: Next.js, sin
+   cambiar nada más).
+3. Si usas un dominio propio, añádelo en *Settings → Domains* y define la variable de entorno
+   `NEXT_PUBLIC_SITE_URL` (p. ej. `https://rem0.dev`) para que la URL canónica, el sitemap y la
+   imagen de compartir apunten a él. Sin ella se usa el dominio de producción de Vercel.
 
-## Learn More
+Antes de publicar conviene comprobar la build en local:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run build
+npm start
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Dónde se cambia cada cosa
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Qué | Dónde |
+| --- | --- |
+| Textos, proyectos, trayectoria, premios, contacto | `src/lib/data.ts` |
+| Título, descripción y URL de la web (SEO) | `src/lib/site.ts` |
+| Colores por defecto, lema, forma | `src/components/Providers.tsx` (`defaultTweaks`) y `src/app/globals.css` |
+| Capturas de las webs | `public/webs/` |
+| Fotos de los premios | `public/premios/` |
+| Imagen al compartir el enlace | `src/app/opengraph-image.tsx` |
+| Comportamiento del cajón (apilado, pausa entre carpetas) | `src/components/StackLayer.tsx` |
 
-## Deploy on Vercel
+## Cómo funciona el cajón
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+`StackLayer.tsx` tiene un único controlador (`<Stack>`) que mide todas las carpetas, decide
+dónde se pega cada una (todas comparten la línea de su fila de pestañas, `data-stack-nav`) y en
+cada frame de scroll calcula cuánto tapa cada carpeta a la anterior y el giro 3D de entrada.
+Cada carpeta tiene después un tramo de pausa (`hold`, en % de la pantalla) en el que se queda
+quieta antes de que suba la siguiente.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Stack: Next.js 16, React 19, Tailwind CSS 4, Motion y Lenis (scroll suave).

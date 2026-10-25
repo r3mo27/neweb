@@ -55,18 +55,6 @@ export function Blueprint() {
           {t.blueprint.height} · {folderH ?? "—"}
         </span>
       </div>
-
-      {/* Cajetín */}
-      <div className="mono absolute bottom-9 right-9 hidden border border-cream/30 text-[10px] text-cream/60 lg:block">
-        <div className="flex border-b border-cream/30">
-          <span className="border-r border-cream/30 px-3 py-1.5">rem0</span>
-          <span className="px-3 py-1.5">portfolio</span>
-        </div>
-        <div className="flex">
-          <span className="border-r border-cream/30 px-3 py-1.5">R. Remacha</span>
-          <span className="px-3 py-1.5">ZGZ · 2026</span>
-        </div>
-      </div>
     </div>
   );
 }

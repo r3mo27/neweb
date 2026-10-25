@@ -53,7 +53,7 @@ export function WebsSection() {
       </div>
 
       <div className="mt-6 grid flex-1 items-center gap-12 lg:mt-2 lg:grid-cols-[1.45fr_1fr]">
-        <div className="relative mx-auto h-[min(52vw,420px)] w-full max-w-[780px] sm:h-[460px]">
+        <div className="relative mx-auto h-[min(52vw,420px)] w-full max-w-[780px] sm:h-[clamp(280px,58vh,460px)]">
           <CardSwap
             ref={swapRef}
             width={640}

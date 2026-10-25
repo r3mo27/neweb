@@ -18,7 +18,7 @@ export function TrayectoriaSection() {
     >
       <SectionTitle className="text-cream">{copy.trayectoria.title}</SectionTitle>
 
-      <ol className="mt-10 grid flex-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <ol className="mt-10 grid flex-1 gap-5 sm:mt-[clamp(1.25rem,4vh,2.5rem)] sm:grid-cols-2 lg:grid-cols-4">
         {copy.trayectoria.timeline.map((t, i) => (
           <motion.li
             key={i}
@@ -38,7 +38,7 @@ export function TrayectoriaSection() {
                 version={lang}
                 shadow="rounded-[4px] shadow-[0_22px_40px_-18px_rgba(0,0,0,0.7)]"
               >
-                <article className="paper relative flex h-full min-h-[300px] flex-col rounded-[4px] p-6 sm:p-7">
+                <article className="paper relative flex h-full min-h-[min(300px,42vh)] flex-col rounded-[4px] p-6 sm:p-7">
                   <span className="mono text-[11px] text-ink/50">{t.when}</span>
                   <h3 className="mt-4 text-[clamp(1.35rem,1.9vw,1.75rem)] font-extrabold leading-[1.05] tracking-[-0.035em] text-ink">
                     {t.title}

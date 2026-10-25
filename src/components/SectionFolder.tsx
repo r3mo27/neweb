@@ -30,7 +30,8 @@ export function SectionFolder({ id, label, className, index, hold, last, childre
       <div className="relative">
         <TabRow only={id} />
         <div
-          className={`r folder-shadow relative flex flex-col px-5 pb-10 pt-8 sm:min-h-[var(--folder-h)] sm:px-12 sm:pb-12 sm:pt-12 ${className}`}
+          data-stack-body
+          className={`r folder-shadow relative flex flex-col px-5 pb-10 pt-8 sm:min-h-[var(--folder-h)] sm:px-12 sm:pb-[clamp(1.5rem,5vh,3rem)] sm:pt-[clamp(1.5rem,5vh,3rem)] ${className}`}
         >
           {children}
           <CoverShade />
@@ -53,7 +54,7 @@ export function SectionTitle({
       whileInView={{ y: 0, opacity: 1, rotate: 0 }}
       viewport={{ once: true, amount: 0.6 }}
       transition={{ type: "spring", stiffness: 160, damping: 18 }}
-      className={`display origin-bottom-left text-[clamp(3.4rem,9vw,7.6rem)] ${className}`}
+      className={`display origin-bottom-left text-[clamp(3rem,min(9vw,14vh),7.6rem)] ${className}`}
     >
       {children}
     </motion.h2>

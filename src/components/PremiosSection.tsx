@@ -12,6 +12,15 @@ import { SectionFolder, SectionTitle } from "./SectionFolder";
 const spring = { type: "spring", stiffness: 260, damping: 22 } as const;
 const noop = () => () => {};
 
+/* En pantallas bajas las carpetas encogen para que el cajón quepa entero, con sus pestañas */
+const SHORT = "(max-height: 760px)";
+const isShort = () => window.matchMedia(SHORT).matches;
+function subscribeShort(onChange: () => void) {
+  const media = window.matchMedia(SHORT);
+  media.addEventListener("change", onChange);
+  return () => media.removeEventListener("change", onChange);
+}
+
 export function PremiosSection() {
   const { t } = useSite();
   const [open, setOpen] = useState<{ award: Award; photo: number } | null>(null);
@@ -30,12 +39,12 @@ export function PremiosSection() {
     >
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <SectionTitle className="text-ink">{t.premios.title}</SectionTitle>
-        <p className="max-w-[340px] text-[15px] leading-relaxed text-ink/80 lg:mt-4">
+        <p className="max-w-[420px] text-[15px] leading-relaxed text-ink/80 lg:mt-4">
           {t.premios.intro}
         </p>
       </div>
 
-      <div className="mt-14 grid flex-1 content-center gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-14 grid flex-1 content-center sm:mt-[clamp(1.25rem,5vh,3.5rem)] gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
         {awards.map((a, i) => (
           <motion.div
             key={a.id}
@@ -74,6 +83,7 @@ function AwardFolder({ award, onOpen }: { award: Award; onOpen: (photo: number) 
   const { t } = useSite();
   const text = t.premios.awards[award.id];
   const [isOpen, setIsOpen] = useState(false);
+  const short = useSyncExternalStore(subscribeShort, isShort, () => false);
   const items: FolderEntry[] = [
     { image: award.photos[0], alt: t.premios.photoOf(text.title, 1) },
     { image: award.photos[1], alt: t.premios.photoOf(text.title, 2) },
@@ -89,7 +99,7 @@ function AwardFolder({ award, onOpen }: { award: Award; onOpen: (photo: number) 
         color="#1a24a6"
         paperColor="#f2efe6"
         tabPosition="left"
-        size={1.3}
+        size={short ? 1.05 : 1.3}
         open={isOpen}
         onOpenChange={setIsOpen}
         zoomOnClick={false}

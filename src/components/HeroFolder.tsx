@@ -106,6 +106,7 @@ export function HeroFolder() {
               {/* Fondo de la carpeta: mismo hueco que ocuparán las secciones */}
               {/* Con un papel en la mano el cuerpo sube por encima de las pestañas (z-20) */}
               <div
+                data-stack-body
                 className={`r relative h-[480px] bg-navy sm:h-[var(--folder-h)] ${lifted ? "z-30" : ""}`}
                 style={{ borderTopLeftRadius: 0, perspective: 1100 }}
               >

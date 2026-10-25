@@ -96,6 +96,18 @@ export function Stack({ children }: { children: ReactNode }) {
     const all = [...layers.current.entries()].sort((a, b) => a[0] - b[0]).map(([, l]) => l);
     if (!vh || !all.length) return;
 
+    // Todas las carpetas miden lo mismo: si no, cada una se pegaría a una altura distinta y sus
+    // pestañas no caerían en la misma fila. Manda la que más contenido tiene. En móvil no: ahí
+    // las secciones son mucho más largas que la pantalla y cada una va a su aire.
+    const bodies = all.map((l) => l.el.querySelector<HTMLElement>("[data-stack-body]"));
+    if (window.matchMedia("(min-width: 640px)").matches) {
+      bodies.forEach((b) => b && (b.style.minHeight = "0px"));
+      const tallest = Math.max(...bodies.map((b) => b?.offsetHeight ?? 0));
+      bodies.forEach((b) => b && (b.style.minHeight = `${tallest}px`));
+    } else {
+      bodies.forEach((b) => b && (b.style.minHeight = ""));
+    }
+
     // Dónde está la fila de pestañas dentro de cada capa.
     const navOff = all.map((l) => {
       const nav = l.el.querySelector<HTMLElement>("[data-stack-nav]");
